@@ -12,6 +12,7 @@ var request = require("request"); // "Request" library
 var cors = require("cors");
 var querystring = require("querystring");
 var cookieParser = require("cookie-parser");
+const axios = require("axios");
 require("dotenv").config();
 
 var client_id = "cd66c60352304cec9b3e38584fb3ed47"; // Your client id
@@ -105,16 +106,25 @@ app.get("/callback", function(req, res) {
         var access_token = body.access_token,
           refresh_token = body.refresh_token;
 
-        var options = {
-          url: "https://api.spotify.com/v1/me",
-          headers: { Authorization: "Bearer " + access_token },
-          json: true
-        };
+        // const options = {
+        //   headers: { Authorization: "Bearer " + access_token },
+        //   json: true
+        // };
 
-        // use the access token to access the Spotify Web API
-        request.get(options, function(error, response, body) {
-          console.log(body);
-        });
+        // axios
+        //   .get("https://api.spotify.com/v1/me", options)
+        //   .then(axiosResponse => {
+        //     // console.log(axiosResponse.data);
+        //     data = axiosResponse.data;
+        //     res.redirect(
+        //       "mymusic/#" +
+        //         querystring.stringify({
+        //           access_token: access_token,
+        //           refresh_token: refresh_token
+        //         })
+        //     );
+        //   })
+        //   .catch(err => console.log(err));
 
         // we can also pass the token to the browser to make requests from there
         res.redirect(
@@ -123,7 +133,6 @@ app.get("/callback", function(req, res) {
               access_token: access_token,
               refresh_token: refresh_token
             })
-          // "/mymusic"
         );
       } else {
         res.redirect(
