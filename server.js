@@ -7,17 +7,17 @@
  * https://developer.spotify.com/web-api/authorization-guide/#authorization_code_flow
  */
 
-var express = require("express"); // Express web server framework
-var request = require("request"); // "Request" library
-var cors = require("cors");
-var querystring = require("querystring");
-var cookieParser = require("cookie-parser");
+const express = require("express"); // Express web server framework
+const request = require("request"); // "Request" library
+const cors = require("cors");
+const querystring = require("querystring");
+const cookieParser = require("cookie-parser");
 const axios = require("axios");
 require("dotenv").config();
 
-var client_id = "cd66c60352304cec9b3e38584fb3ed47"; // Your client id
-var client_secret = process.env.CLIENT_SECRET; // Your secret
-var redirect_uri = "http://localhost:3000/callback"; // Your redirect uri
+const client_id = "cd66c60352304cec9b3e38584fb3ed47"; // Your client id
+const client_secret = process.env.CLIENT_SECRET; // Your secret
+const redirect_uri = "http://localhost:3000/callback"; // Your redirect uri
 
 /**
  * Generates a random string containing numbers and letters
@@ -25,8 +25,8 @@ var redirect_uri = "http://localhost:3000/callback"; // Your redirect uri
  * @return {string} The generated string
  */
 var generateRandomString = function(length) {
-  var text = "";
-  var possible =
+  let text = "";
+  const possible =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
   for (var i = 0; i < length; i++) {
@@ -52,11 +52,11 @@ app.get("/", (req, res) => {
 });
 
 app.get("/login", function(req, res) {
-  var state = generateRandomString(16);
+  const state = generateRandomString(16);
   res.cookie(stateKey, state);
 
   // your application requests authorization
-  var scope = "user-read-private user-read-email";
+  const scope = "user-read-private user-read-email user-top-read";
   res.redirect(
     "https://accounts.spotify.com/authorize?" +
       querystring.stringify({
@@ -173,7 +173,7 @@ app.get("/refresh_token", function(req, res) {
   });
 });
 
-// My MUSIC
+// My music page
 app.get("/mymusic/", (req, res) => {
   const { access_token, refresh_token } = req.query;
 
@@ -182,14 +182,25 @@ app.get("/mymusic/", (req, res) => {
     json: true
   };
 
-  axios
-    .get("https://api.spotify.com/v1/me", options)
-    .then(axiosResponse => {
-      console.log(axiosResponse.data);
-      const data = axiosResponse.data;
-      res.render("mymusic", { data: data });
-    })
-    .catch(err => console.log(err));
+  async function getData() {
+    try {
+      const response = await Promise.all([
+        axios.get("https://api.spotify.com/v1/me", options),
+        axios.get(
+          "https://api.spotify.com/v1/me/top/artists/?limit=10&time_range=long_term",
+          options
+        )
+      ]);
+
+      // const data = response.data;
+      console.log(response[1].data.items.length);
+      res.render("mymusic", { response: response });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  getData();
 });
 
 console.log("Listening on 3000");
