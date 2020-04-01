@@ -106,11 +106,6 @@ app.get("/callback", function(req, res) {
         var access_token = body.access_token,
           refresh_token = body.refresh_token;
 
-        // const options = {
-        //   headers: { Authorization: "Bearer " + access_token },
-        //   json: true
-        // };
-
         // axios
         //   .get("https://api.spotify.com/v1/me", options)
         //   .then(axiosResponse => {
@@ -193,7 +188,7 @@ app.get("/mymusic/", (req, res) => {
       ]);
 
       // const data = response.data;
-      console.log(response[1].data.items.length);
+      // console.log(response[1].data.items.length);
       res.render("mymusic", { response: response });
     } catch (err) {
       console.log(err);
