@@ -205,3 +205,5 @@ app.get("/mymusic/", (req, res) => {
 
 console.log("Listening on 3000");
 app.listen(3000);
+
+// express-session, musicScape github, module.exports, spotifyAPI, p5.js d3.js, autocomplete() jqueryUI, fetching jQuery, knockout.js
