@@ -8,7 +8,24 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <style>
+    .circle-wrapper {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      position: relative;
+      overflow: hidden;
+    }
 
+    .artist-pic {
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
   </style>
 </head>
 
@@ -16,8 +33,9 @@
   <div class="container">
     <div class="row">
       <img id="profile-pic" src="<%= response[0].data.images[0].url %>" alt="display pic"
-        style="width: 10%; border-radius: 10%; margin: 10px;">
-      <h1>Logged in as <span id="display-name"><%= response[0].data.display_name %></span></h1>
+        style="width: 70px; border-radius: 50%; margin: 10px;">
+      <h1 style="line-height: 200%;">Logged in as <span id="display-name"><%= response[0].data.display_name %></span>
+      </h1>
     </div>
     <div class="row">
       <div class="col-md-4">
@@ -29,16 +47,15 @@
         <div id="select-group" class="form-group">
           <label for="select-time">Select time period :</label>
           <select class="form-control" id="select-time">
-            <option value="long_term">From the first day</option>
-            <option value="medium_term">Last 6 months</option>
             <option value="short_term">Last month</option>
+            <option value="medium_term">Last 6 months</option>
+            <option value="long_term">From the first day</option>
           </select>
         </div>
       </div>
     </div>
     <div class="row">
       <div class="col-md-12" id="my-top-artists">
-
 
       </div>
     </div>
@@ -106,10 +123,13 @@
                 options
               );
               const data = await response.json();
+              console.log(data);
               $("#my-top-artists").empty();
               data.items.forEach((item, index) => {
 
-                $("#my-top-artists").append("<p>" + (index + 1) + ". " + item.name + "</p>");
+                const val = `<div class="circle-wrapper"><img src=${item.images[2].url} alt=${item.name}></div>` +
+                  `<p>${index + 1}. ${item.name}</p>`;
+                $("#my-top-artists").append(val);
               });
 
 
@@ -123,7 +143,6 @@
           // Default is long term
           getTopArtists($('#select-time').val());
           $('#select-time').change(() => {
-            console.log($('#select-time').val());
             getTopArtists($('#select-time').val());
           })
 
