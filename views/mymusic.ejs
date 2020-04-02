@@ -8,23 +8,10 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <style>
-    .circle-wrapper {
-      width: 160px;
-      height: 160px;
+    .circle-wrapper img {
+      height: 64px;
+      width: 64px;
       border-radius: 50%;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .artist-pic {
-      min-width: 100%;
-      min-height: 100%;
-      width: auto;
-      height: auto;
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
     }
   </style>
 </head>
@@ -123,12 +110,12 @@
                 options
               );
               const data = await response.json();
-              console.log(data);
+              console.log(data.items[0]);
               $("#my-top-artists").empty();
               data.items.forEach((item, index) => {
 
-                const val = `<div class="circle-wrapper"><img src=${item.images[2].url} alt=${item.name}></div>` +
-                  `<p>${index + 1}. ${item.name}</p>`;
+                const val = `<div style="display:inline-block" class="circle-wrapper mr-2 mb-2"><img src=${item.images[2].url} alt=${item.name}></div>` +
+                  `<p style="display:inline-block">${index + 1}. ${item.name}</p><br>`;
                 $("#my-top-artists").append(val);
               });
 
