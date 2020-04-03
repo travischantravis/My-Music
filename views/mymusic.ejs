@@ -25,15 +25,26 @@
       </h1>
     </div>
     <div class="row">
-      <div class="col-md-4">
-        <h3>Your Top 10 Artists</h3>
+      <div class="col-md-3">
+        <h3>Top 10 Artists</h3>
       </div>
-      <div class="col-md-4">
-
-
+      <div class="col-md-3">
         <div id="select-group" class="form-group">
-          <label for="select-time">Select time period :</label>
-          <select class="form-control" id="select-time">
+          <label for="top-artists-time">Select time period :</label>
+          <select class="form-control" id="top-artists-time">
+            <option value="short_term">Last month</option>
+            <option value="medium_term">Last 6 months</option>
+            <option value="long_term">From the first day</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <h3>Top 10 Tracks</h3>
+      </div>
+      <div class="col-md-3">
+        <div id="select-group1" class="form-group">
+          <label for="top-tracks-time">Select time period :</label>
+          <select class="form-control" id="top-tracks-time">
             <option value="short_term">Last month</option>
             <option value="medium_term">Last 6 months</option>
             <option value="long_term">From the first day</option>
@@ -42,9 +53,9 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-md-12" id="my-top-artists">
+      <div class="col-md-6" id="my-top-artists"></div>
 
-      </div>
+      <div class="col-md-6" id="my-top-tracks"></div>
     </div>
   </div>
 
@@ -103,21 +114,31 @@
             }
           }
 
-          async function getTopArtists(range) {
+          async function getTopTen(type, range) {
             try {
               const response = await fetch(
-                `https://api.spotify.com/v1/me/top/artists/?limit=10&time_range=${range}`,
+                `https://api.spotify.com/v1/me/top/${type}/?limit=10&time_range=${range}`,
                 options
               );
               const data = await response.json();
               console.log(data.items[0]);
-              $("#my-top-artists").empty();
-              data.items.forEach((item, index) => {
+              if (type === 'artists') {
+                $("#my-top-artists").empty();
+                data.items.forEach((item, index) => {
 
-                const val = `<div style="display:inline-block" class="circle-wrapper mr-2 mb-2"><img src=${item.images[2].url} alt=${item.name}></div>` +
-                  `<p style="display:inline-block">${index + 1}. ${item.name}</p><br>`;
-                $("#my-top-artists").append(val);
-              });
+                  const val = `<div style="display:inline-block" class="circle-wrapper mr-2 mb-2"><img src=${item.images[2].url} alt=${item.name}></div>` +
+                    `<p style="display:inline-block">${index + 1}. ${item.name}</p><br>`;
+                  $("#my-top-artists").append(val);
+                });
+              } else if (type === 'tracks') {
+                $("#my-top-tracks").empty();
+                data.items.forEach((item, index) => {
+
+                  const val = `<div style="display:inline-block" class="circle-wrapper mr-2 mb-2"><img src=${item.album.images[2].url} alt=${item.name}></div>` +
+                    `<p style="display:inline-block">${index + 1}. ${item.artists[0].name} - ${item.name}</p><br>`;
+                  $("#my-top-tracks").append(val);
+                });
+              }
 
 
             } catch (err) {
@@ -127,10 +148,16 @@
 
           // getPersonalProfile();
 
-          // Default is long term
-          getTopArtists($('#select-time').val());
-          $('#select-time').change(() => {
-            getTopArtists($('#select-time').val());
+          // Get Top 10 Artists
+          getTopTen("artists", $('#top-artists-time').val());
+          $('#top-artists-time').change(() => {
+            getTopTen($("artists", '#top-artists-time').val());
+          })
+
+          // Get Top 10 Tracks
+          getTopTen("tracks", $('#top-tracks-time').val());
+          $('#top-tracks-time').change(() => {
+            getTopTen("tracks", $('#top-tracks-time').val());
           })
 
         } else {
