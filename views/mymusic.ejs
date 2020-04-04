@@ -24,11 +24,15 @@
       <h1 style="line-height: 200%;">Logged in as <span id="display-name"><%= response[0].data.display_name %></span>
       </h1>
     </div>
+    <div class="row" id="serach" style="margin-bottom: 120px;">
+      <form id="search-artist" class="form-horizontal col-sm-6 col-md-6" role="form">
+        <input id="artist-search" class="form-control" placeholder="Search for an Artist">
+      </form>
+    </div>
+
     <div class="row">
-      <div class="col-md-3">
+      <div class="col-md-6">
         <h3>Top 10 Artists</h3>
-      </div>
-      <div class="col-md-3">
         <div id="select-group" class="form-group">
           <label for="top-artists-time">Select time period :</label>
           <select class="form-control" id="top-artists-time">
@@ -37,11 +41,11 @@
             <option value="long_term">From the first day</option>
           </select>
         </div>
+        <div class="col-md-6" id="my-top-artists"></div>
       </div>
-      <div class="col-md-3">
+
+      <div class="col-md-6">
         <h3>Top 10 Tracks</h3>
-      </div>
-      <div class="col-md-3">
         <div id="select-group1" class="form-group">
           <label for="top-tracks-time">Select time period :</label>
           <select class="form-control" id="top-tracks-time">
@@ -50,26 +54,23 @@
             <option value="long_term">From the first day</option>
           </select>
         </div>
+        <div class="col-md-6" id="my-top-tracks"></div>
       </div>
-    </div>
-    <div class="row">
-      <div class="col-md-6" id="my-top-artists"></div>
-
-      <div class="col-md-6" id="my-top-tracks"></div>
     </div>
   </div>
 
 
 
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-    crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
     integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
     crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+    integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
   <script>
     $(function () {
 
@@ -146,8 +147,6 @@
             }
           }
 
-          // getPersonalProfile();
-
           // Get Top 10 Artists
           getTopTen("artists", $('#top-artists-time').val());
           $('#top-artists-time').change(() => {
@@ -160,10 +159,35 @@
             getTopTen("tracks", $('#top-tracks-time').val());
           })
 
+          const availableTutorials = [
+            "ActionScript",
+            "Bootstrap",
+            "C",
+            "C++",
+            "Ecommerce",
+            "Jquery",
+            "Groovy",
+            "Java",
+            "JavaScript",
+            "Lua",
+            "Perl",
+            "Ruby",
+            "Scala",
+            "Swing",
+            "XHTML"
+          ];
+          $('#artist-search').autocomplete({ source: availableTutorials }).autocomplete('instance')._renderItem = function (ul, item) {
+            return $("<li></li>").data("item.autocomplete", item).append("<a>" + item.value + "</a>").appendTo(ul);
+          };
+
+
+
+
         } else {
           // render initial screen
           window.location = "http://localhost:3000";
         }
+
       }
     })
   </script>
