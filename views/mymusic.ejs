@@ -13,6 +13,18 @@
       width: 64px;
       border-radius: 50%;
     }
+
+    .ui-autocomplete {
+      max-height: 400px;
+      background-color: #eee;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .autocomplete-item {
+      height: 60px;
+      line-height: 60px;
+    }
   </style>
 </head>
 
@@ -159,6 +171,12 @@
             getTopTen("tracks", $('#top-tracks-time').val());
           })
 
+          // Adjust width of menu
+          jQuery.ui.autocomplete.prototype._resizeMenu = function () {
+            var ul = this.menu.element;
+            ul.outerWidth(this.element.outerWidth());
+          }
+
           const availableTutorials = [
             "ActionScript",
             "Bootstrap",
@@ -177,7 +195,8 @@
             "XHTML"
           ];
           $('#artist-search').autocomplete({ source: availableTutorials }).autocomplete('instance')._renderItem = function (ul, item) {
-            return $("<li></li>").data("item.autocomplete", item).append("<a>" + item.value + "</a>").appendTo(ul);
+            const val = `<div class="autocomplete-item"> ${item.value} </div>`;
+            return $("<li></li>").data("item.autocomplete", item).append(val).appendTo(ul);
           };
 
 
