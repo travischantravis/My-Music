@@ -15,15 +15,23 @@
     }
 
     .ui-autocomplete {
-      max-height: 400px;
+      max-height: 240px;
       background-color: #eee;
       overflow-y: auto;
       overflow-x: hidden;
+      list-style: none;
+      margin: 0;
+      padding: 0;
     }
 
     .autocomplete-item {
       height: 60px;
       line-height: 60px;
+      padding-left: 15px;
+    }
+
+    .ui-state-active {
+      background: #fefefe;
     }
   </style>
 </head>
@@ -38,6 +46,7 @@
     </div>
     <div class="row" id="serach" style="margin-bottom: 120px;">
       <form id="search-artist" class="form-horizontal col-sm-6 col-md-6" role="form">
+        <label for="artist-search">Search an artist :</label>
         <input id="artist-search" class="form-control" placeholder="Search for an Artist">
       </form>
     </div>
@@ -181,6 +190,7 @@
             "ActionScript",
             "Bootstrap",
             "C",
+            "Ce", "Cee", "Ceee",
             "C++",
             "Ecommerce",
             "Jquery",
@@ -194,7 +204,11 @@
             "Swing",
             "XHTML"
           ];
-          $('#artist-search').autocomplete({ source: availableTutorials }).autocomplete('instance')._renderItem = function (ul, item) {
+          $('#artist-search').autocomplete({
+            minLength: 0,
+
+            source: availableTutorials
+          }).autocomplete('instance')._renderItem = function (ul, item) {
             const val = `<div class="autocomplete-item"> ${item.value} </div>`;
             return $("<li></li>").data("item.autocomplete", item).append(val).appendTo(ul);
           };
