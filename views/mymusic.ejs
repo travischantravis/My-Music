@@ -14,6 +14,12 @@
       border-radius: 50%;
     }
 
+    .artist-popularity {
+      display: inline-block;
+      margin-left: 20px;
+
+    }
+
     .ui-autocomplete {
       max-height: 240px;
       background-color: #eee;
@@ -55,7 +61,7 @@
 
     <div class="row">
       <div class="col-md-6">
-        <h3>Top 10 Artists</h3>
+        <h3>Your Top 10 Artists</h3>
         <div id="select-group" class="form-group">
           <label for="top-artists-time">Select time period :</label>
           <select class="form-control" id="top-artists-time">
@@ -68,7 +74,7 @@
       </div>
 
       <div class="col-md-6">
-        <h3>Top 10 Tracks</h3>
+        <h3>Your Top 10 Tracks</h3>
         <div id="select-group1" class="form-group">
           <label for="top-tracks-time">Select time period :</label>
           <select class="form-control" id="top-tracks-time">
@@ -148,10 +154,17 @@
               if (type === 'artists') {
                 $("#my-top-artists").empty();
                 data.items.forEach((item, index) => {
+                  let popularityColor = "lightgreen";
+                  if (item.popularity < 60)
+                    popularityColor = "lightsalmon";
+                  else if (item.popularity < 80)
+                    popularityColor = "lightskyblue";
 
                   const val = `<div style="display:inline-block" class="circle-wrapper mr-2 mb-2"><img src=${item.images[2].url} alt=${item.name}></div>` +
-                    `<p style="display:inline-block">${index + 1}. ${item.name}</p><br>`;
+                    `<p style="display:inline-block">${index + 1}. ${item.name}</p>` +
+                    `<span class="artist-popularity" style="background-color:${popularityColor}">${item.popularity}</span><br>`;
                   $("#my-top-artists").append(val);
+
                 });
               } else if (type === 'tracks') {
                 $("#my-top-tracks").empty();
@@ -187,29 +200,12 @@
             ul.outerWidth(this.element.outerWidth());
           }
 
-          const availableTutorials = [
-            "ActionScript",
-            "Bootstrap",
-            "C",
-            "Ce", "Cee", "Ceee",
-            "C++",
-            "Ecommerce",
-            "Jquery",
-            "Groovy",
-            "Java",
-            "JavaScript",
-            "Lua",
-            "Perl",
-            "Ruby",
-            "Scala",
-            "Swing",
-            "XHTML"
-          ];
+
           $('#artist-search').autocomplete({
             minLength: 0,
             source: async function (request, response) {
               try {
-                // + sign represents a space, this prevents blank search bar giving error
+                // '+' sign represents a space, this prevents blank search bar giving error
                 const artistResponse = await fetch(`https://api.spotify.com/v1/search?type=artist&q=${request.term}+`, options);
                 const data = await artistResponse.json();
                 if (data.artists && data.artists.items.length) {
