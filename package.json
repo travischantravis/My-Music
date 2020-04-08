@@ -5,8 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node server",
-    "start": "node server"
+    "build": "node server.js",
+    "start": "node server.js"
   },
   "engines": {
     "node": "12.x"
