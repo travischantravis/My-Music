@@ -199,7 +199,8 @@ app.get("/mymusic/", (req, res) => {
   getData();
 });
 
-console.log("Listening on 3000");
-app.listen(3000);
+var port = process.env.PORT || 3000;
+console.log("Listening on port " + port);
+app.listen(port);
 
 // express-session, musicScape github, module.exports, spotifyAPI, p5.js d3.js, autocomplete() jqueryUI, fetching jQuery, knockout.js
