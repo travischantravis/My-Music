@@ -22,6 +22,8 @@
       list-style: none;
       margin: 0;
       padding: 0;
+      cursor: pointer;
+
     }
 
     .autocomplete-item {
@@ -143,7 +145,6 @@
                 options
               );
               const data = await response.json();
-              console.log(data.items[0]);
               if (type === 'artists') {
                 $("#my-top-artists").empty();
                 data.items.forEach((item, index) => {
@@ -206,12 +207,36 @@
           ];
           $('#artist-search').autocomplete({
             minLength: 0,
-
-            source: availableTutorials
-          }).autocomplete('instance')._renderItem = function (ul, item) {
-            const val = `<div class="autocomplete-item"> ${item.value} </div>`;
-            return $("<li></li>").data("item.autocomplete", item).append(val).appendTo(ul);
-          };
+            source: async function (request, response) {
+              try {
+                // + sign represents a space, this prevents blank search bar giving error
+                const artistResponse = await fetch(`https://api.spotify.com/v1/search?type=artist&q=${request.term}+`, options);
+                const data = await artistResponse.json();
+                if (data.artists && data.artists.items.length) {
+                  let res = [];
+                  data.artists.items.forEach(artist => {
+                    res.push(artist);
+                  })
+                  console.log(data.artists);
+                  response(res);
+                } else {
+                  response([]);
+                }
+              } catch (err) {
+                console.log(err);
+                return;
+              }
+            },
+            select: function (event, ui) {
+              $('#artist-search').val(ui.item.name);
+              return false;
+            }
+          })
+            .autocomplete('instance')._renderItem = function (ul, item) {
+              if (!item) return;
+              const val = `<div class="autocomplete-item"> ${item.name} </div>`;
+              return $("<li></li>").data("item.autocomplete", item).append(val).appendTo(ul);
+            };
 
 
 
