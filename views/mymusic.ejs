@@ -14,10 +14,14 @@
       border-radius: 50%;
     }
 
-    .artist-popularity {
+    .artist-popularity,
+    .track-popularity {
       display: inline-block;
       margin-left: 20px;
+    }
 
+    .played-at {
+      margin-left: 20px;
     }
 
     .ui-autocomplete {
@@ -84,6 +88,14 @@
           </select>
         </div>
         <div class="col-md-12" id="my-top-tracks"></div>
+      </div>
+    </div>
+
+    <div class="row my-4">
+      <div class="col-md-12">
+        <h3>Your Listening History</h3>
+
+        <div class="col-md-12" id="my-history"></div>
       </div>
     </div>
   </div>
@@ -169,13 +181,47 @@
               } else if (type === 'tracks') {
                 $("#my-top-tracks").empty();
                 data.items.forEach((item, index) => {
+                  let popularityColor = "lightgreen";
+                  if (item.popularity < 60)
+                    popularityColor = "lightsalmon";
+                  else if (item.popularity < 80)
+                    popularityColor = "lightskyblue";
 
                   const val = `<div style="display:inline-block" class="circle-wrapper mr-2 mb-2"><img src=${item.album.images[2].url} alt=${item.name}></div>` +
-                    `<p style="display:inline-block">${index + 1}. ${item.artists[0].name} - ${item.name}</p><br>`;
+                    `<p style="display:inline-block">${index + 1}. ${item.artists[0].name} - ${item.name}</p>` +
+                    `<span class="track-popularity" style="background-color:${popularityColor}">${item.popularity}</span><br>`;;
                   $("#my-top-tracks").append(val);
                 });
               }
+            } catch (err) {
+              console.log(err);
+            }
+          }
 
+          async function getHistory() {
+            try {
+              const response = await fetch("https://api.spotify.com/v1/me/player/recently-played", options);
+              const data = await response.json();
+              data.items.forEach((item, index) => {
+                let popularityColor = "lightgreen";
+                if (item.track.popularity < 60)
+                  popularityColor = "lightsalmon";
+                else if (item.popularity < 80)
+                  popularityColor = "lightskyblue";
+
+                const dateObj = new Date(item.played_at);
+                const month = dateObj.getUTCMonth() + 1; //months from 1-12
+                const day = dateObj.getUTCDate();
+                const year = dateObj.getUTCFullYear();
+
+                const newDate = day + "/" + month + "/" + year + ' ' + dateObj.toLocaleTimeString();
+
+
+                const val = `<div style="display:inline-block" class="circle-wrapper mr-2 mb-2"><img src=${item.track.album.images[2].url} alt=${item.track.name}></div>` +
+                  `<p style="display:inline-block">${index + 1}. ${item.track.artists[0].name} - ${item.track.name}</p>` +
+                  `<span class="track-popularity" style="background-color:${popularityColor}">${item.track.popularity}</span>` + `<span class="played-at">Played at ${newDate}</span > ` + `<br>`;
+                $("#my-history").append(val);
+              });
 
             } catch (err) {
               console.log(err);
@@ -193,6 +239,9 @@
           $('#top-tracks-time').change(() => {
             getTopTen("tracks", $('#top-tracks-time').val());
           })
+
+          // Get History
+          getHistory();
 
           // Adjust width of menu
           jQuery.ui.autocomplete.prototype._resizeMenu = function () {
