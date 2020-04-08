@@ -20,21 +20,49 @@
       white-space: nowrap;
       width: 500px;
     }
+
+    #music-undraw {
+      width: 40%;
+    }
+
+    .spotify-btn {
+      /* 1ed760 */
+      background-color: rgb(30, 215, 96);
+      color: white;
+      border: 1px solid rgb(30, 215, 96);
+      border-radius: 20px;
+      text-transform: uppercase;
+      padding: 5px 15px;
+      letter-spacing: 1px;
+      outline: none;
+    }
+
+    .spotify-btn:hover {
+      background: #5ae88c;
+      border: 1px solid rgb(30, 215, 96);
+    }
   </style>
 </head>
 
 <body>
   <div class="container">
-    <div id="login">
-      <h1>Authorization Code flow</h1>
-      <a href="/login" class="btn btn-primary">Log in with Spotify</a>
+    <div class="row my-4">
+      <div id="login">
+        <h1>Your Spotify Ranking Visualisation</h1>
+        <a href="/login" class="btn btn-primary spotify-btn my-4">Log in with Spotify</a>
+      </div>
     </div>
-    <div id="loggedin">
-      <div id="user-profile">
+    <div class="row">
+      <div id="loggedin">
+        <div id="user-profile">
+        </div>
+        <div id="oauth">
+        </div>
+        <button class="btn btn-default" id="obtain-new-token">Obtain new token using the refresh token</button>
       </div>
-      <div id="oauth">
-      </div>
-      <button class="btn btn-default" id="obtain-new-token">Obtain new token using the refresh token</button>
+    </div>
+    <div class="row">
+      <img id="music-undraw" src="img/music.svg" alt="svg">
     </div>
   </div>
 

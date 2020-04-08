@@ -14,6 +14,7 @@
       border-radius: 50%;
     }
 
+
     .artist-popularity,
     .track-popularity {
       display: inline-block;
@@ -51,10 +52,12 @@
 <body>
   <div class="container">
     <div class="row">
-      <img id="profile-pic" src="<%= response[0].data.images[0].url %>" alt="display pic"
-        style="width: 70px; border-radius: 50%; margin: 10px;">
-      <h1 style="line-height: 200%;">Logged in as <span id="display-name"><%= response[0].data.display_name %></span>
-      </h1>
+      <div class="top-profile" style="vertical-align: middle;">
+        <img id="profile-pic" src="<%= response[0].data.images[0].url %>" alt="display pic"
+          style="width: 70px; border-radius: 50%; margin: 10px;">
+        <span style="font-size: 26px;" id="display-name"><%= response[0].data.display_name %>
+        </span>
+      </div>
     </div>
     <div class="row" id="serach" style="margin-bottom: 120px;">
       <form id="search-artist" class="form-horizontal col-sm-6 col-md-6" role="form">
@@ -231,7 +234,7 @@
           // Get Top 10 Artists
           getTopTen("artists", $('#top-artists-time').val());
           $('#top-artists-time').change(() => {
-            getTopTen($("artists", '#top-artists-time').val());
+            getTopTen("artists", $('#top-artists-time').val());
           })
 
           // Get Top 10 Tracks
