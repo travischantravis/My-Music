@@ -58,7 +58,7 @@
     }
 
     .genre-progress-bar {
-      background-color: rgb(30, 215, 96);
+      background-color: #1db954;
       color: white;
     }
   </style>
@@ -119,6 +119,14 @@
     <div class="row my-4">
       <div class="col-md-6">
         <h3>Your Top Genre</h3>
+        <div class="form-group">
+          <label for="top-genre-time">Select time period :</label>
+          <select class="form-control" id="top-genre-time">
+            <option value="short_term">Last month</option>
+            <option value="medium_term">Last 6 months</option>
+            <option value="long_term">All time</option>
+          </select>
+        </div>
         <div id="my-genre"></div>
       </div>
     </div>
@@ -206,24 +214,39 @@
             }
           }
 
+          async function getSavedTracks() {
+            try {
+              const response = await fetch(
+                // NOTE Change limit to 50 later
+                `https://api.spotify.com/v1/me/tracks?limit=20`,
+                options
+              );
+              const data = await response.json();
+              console.log(data);
+            } catch (err) {
+              console.log(err);
+            }
+          }
+
           // Get Genre
-          async function getGenre() {
+          async function getGenre(range) {
             try {
               // Get data
               const limit = 50;
               const response = await fetch(
                 // NOTE Change limit to 50 later
-                `https://api.spotify.com/v1/me/top/artists/?limit=${limit}&time_range=short_term`,
+                `https://api.spotify.com/v1/me/top/artists/?limit=${limit}&time_range=${range}`,
                 options
               );
               const data = await response.json();
+              $("#my-genre").empty();
+
               // Assign all genre into an array
               let genreArray = [];
               data.items.forEach((item, index) => {
                 genreArray = genreArray.concat(item.genres);
 
               });
-              // console.log(genreArray);
 
               // Sort genre and corresponding occurence 
               let [cleanedGenreArray, genreOccurenceArray] = findArray(genreArray);
@@ -233,7 +256,6 @@
                 return genreOccurenceArray[cleanedGenreArray.indexOf(a)] < genreOccurenceArray[cleanedGenreArray.indexOf(b)] ? 1 : -1;
               });
               let sortedOccurenceArray = genreOccurenceArray.sort((a, b) => b - a);
-              // console.log(sortedGenreArray, sortedOccurenceArray);
 
               // Render result by looping through each genre
               sortedGenreArray.forEach((item, index) => {
@@ -337,7 +359,13 @@
           getHistory();
 
           // Get Genre
-          getGenre();
+          getGenre($('#top-genre-time').val());
+          $('#top-genre-time').change(() => {
+            getGenre($('#top-genre-time').val());
+          })
+
+          // Get Saved Tracks
+          getSavedTracks();
 
           // Adjust width of menu
           jQuery.ui.autocomplete.prototype._resizeMenu = function () {
