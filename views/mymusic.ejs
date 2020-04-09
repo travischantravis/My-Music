@@ -118,7 +118,7 @@
 
     <div class="row my-4">
       <div class="col-md-6">
-        <h3>Your Top Genre</h3>
+        <h3>Your Top Genre Presence</h3>
         <div class="form-group">
           <label for="top-genre-time">Select time period :</label>
           <select class="form-control" id="top-genre-time">
@@ -204,6 +204,19 @@
             return [a, b];
           }
 
+          // Sort two arrays
+          function sortTwoArrays(bigArray) {
+            // Sort genre and corresponding occurence 
+            let [cleanedGenreArray, genreOccurenceArray] = findArray(bigArray);
+            // console.log(cleanedGenreArray, genreOccurenceArray);
+
+            let sortedGenreArray = cleanedGenreArray.sort(function (a, b) {
+              return genreOccurenceArray[cleanedGenreArray.indexOf(a)] < genreOccurenceArray[cleanedGenreArray.indexOf(b)] ? 1 : -1;
+            });
+            let sortedOccurenceArray = genreOccurenceArray.sort((a, b) => b - a);
+            return [sortedGenreArray, sortedOccurenceArray];
+          }
+
           // Get Personal Profile
           async function getPersonalProfile() {
             try {
@@ -214,54 +227,115 @@
             }
           }
 
-          async function getSavedTracks() {
+          async function getGenreFromTracks(data) {
             try {
-              const response = await fetch(
-                // NOTE Change limit to 50 later
-                `https://api.spotify.com/v1/me/tracks?limit=20`,
-                options
-              );
-              const data = await response.json();
-              console.log(data);
+              // Get top tracks
+              // const response = await fetch(
+              //   `https://api.spotify.com/v1/me/top/tracks?limit=20`,
+              //   options
+              // );
+              // const data = await response.json();
+
+              // Get all artists ID from top tracks        
+              let artistID = [];
+              let artistName = [];
+              data.items.forEach((item, index) => {
+                item.artists.forEach(artist => {
+                  artistID.push(artist.id);
+                  artistName.push(artist.name);
+                })
+              });
+              // Keep duplicates in the array, because that represents your music taste
+
+              // Get indiviual artists for their genres
+              let genreArray = [];
+              await Promise.all(artistID.map(async (id) => {
+                const response = await fetch(
+                  `https://api.spotify.com/v1/artists/${id}`,
+                  options
+                );
+                const data = await response.json();
+                genreArray = genreArray.concat(data.genres);
+              }));
+              // console.log(genreArray);
+
+              const [sortedGenreArray, sortedOccurenceArray] = sortTwoArrays(genreArray);
+              // console.log([sortedGenreArray, sortedOccurenceArray]);
+              return [sortedGenreArray, sortedOccurenceArray];
+
             } catch (err) {
               console.log(err);
+              return;
             }
           }
 
           // Get Genre
           async function getGenre(range) {
             try {
-              // Get data
+              // Get data from multiple endpoints
+              // Endpoint 1: Get genre from top artists
+              // Endpoint 2: Get genre from top tracks' artists
               const limit = 50;
-              const response = await fetch(
-                // NOTE Change limit to 50 later
-                `https://api.spotify.com/v1/me/top/artists/?limit=${limit}&time_range=${range}`,
-                options
+              const responses = await Promise.all([
+                fetch(`https://api.spotify.com/v1/me/top/artists/?limit=${limit}&time_range=${range}`, options),
+                fetch(`https://api.spotify.com/v1/me/top/tracks?limit=20`, options)
+              ]);
+              const data = await Promise.all(
+                responses.map(async response => {
+                  return await response.json();
+                })
               );
-              const data = await response.json();
+
               $("#my-genre").empty();
 
-              // Assign all genre into an array
+              // Endpoint 1: Assign all genre into an array
               let genreArray = [];
-              data.items.forEach((item, index) => {
+              data[0].items.forEach((item, index) => {
                 genreArray = genreArray.concat(item.genres);
+              });
+              const [sortedGenreArray1, sortedOccurenceArray1] = sortTwoArrays(genreArray);
 
+
+              // Endpoint 2:
+              const [sortedGenreArray2, sortedOccurenceArray2] = await getGenreFromTracks(data[1]);
+
+              // console.log(sortedGenreArray1, sortedGenreArray2);
+              // console.log(sortedOccurenceArray1, sortedOccurenceArray2);
+
+              const unsortedGenreArray = [...sortedGenreArray1, ...sortedGenreArray2];
+              const unsortedOccurenceArray = [...sortedOccurenceArray1, ...sortedOccurenceArray2];
+
+              console.log(unsortedGenreArray, unsortedOccurenceArray);
+              unsortedGenreArray.forEach((genre, index) => {
+                if (index + 1 < unsortedGenreArray.length) {
+                  // Get the index of the second duplicated item
+                  const secondIndex = unsortedGenreArray.indexOf(genre, index + 1);
+                  // Run if an item is found
+                  if (secondIndex !== -1) {
+                    unsortedOccurenceArray[index] = unsortedOccurenceArray[index] + unsortedOccurenceArray[secondIndex];
+                    // Remove the duplicated item from both arrays
+                    unsortedOccurenceArray.splice(secondIndex, 1);
+                    unsortedGenreArray.splice(secondIndex, 1);
+                  }
+                }
               });
 
-              // Sort genre and corresponding occurence 
-              let [cleanedGenreArray, genreOccurenceArray] = findArray(genreArray);
-              // console.log(cleanedGenreArray, genreOccurenceArray);
-
-              let sortedGenreArray = cleanedGenreArray.sort(function (a, b) {
-                return genreOccurenceArray[cleanedGenreArray.indexOf(a)] < genreOccurenceArray[cleanedGenreArray.indexOf(b)] ? 1 : -1;
+              // Sort the two arrays
+              let sortedGenreArray = unsortedGenreArray.sort(function (a, b) {
+                return unsortedOccurenceArray[unsortedGenreArray.indexOf(a)] < unsortedOccurenceArray[unsortedGenreArray.indexOf(b)] ? 1 : -1;
               });
-              let sortedOccurenceArray = genreOccurenceArray.sort((a, b) => b - a);
+              let sortedOccurenceArray = unsortedOccurenceArray.sort((a, b) => b - a);
+              console.log(sortedGenreArray, sortedOccurenceArray);
+
+              console.log(data[1]);
+
 
               // Render result by looping through each genre
               sortedGenreArray.forEach((item, index) => {
+                // Limit results to 15 or less
                 if (index <= 14) {
-
-                  const genrePercent = parseInt(sortedOccurenceArray[index] / limit * 100);
+                  const lengthOfData = data[0].items.length + data[1].items.length;
+                  const genrePercent = parseInt(sortedOccurenceArray[index] / lengthOfData * 100);
                   const val = `<div class="genre-row"><span>${index + 1}. ${item}</span>` + `<div class="progress"><div class="progress-bar genre-progress-bar" role="progressbar" aria-valuenow="${genrePercent}" aria-valuemin="0" aria-valuemax="100" style="width:${genrePercent}%">${genrePercent}%</div></div></div>` + `<br>`;
                   $("#my-genre").append(val);
                 }
@@ -364,8 +438,8 @@
             getGenre($('#top-genre-time').val());
           })
 
-          // Get Saved Tracks
-          getSavedTracks();
+          // Get Genre From Tracks
+          // getGenreFromTracks();
 
           // Adjust width of menu
           jQuery.ui.autocomplete.prototype._resizeMenu = function () {
