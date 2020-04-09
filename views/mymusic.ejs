@@ -223,7 +223,7 @@
               // Render result by looping through each genre
               sortedGenreArray.forEach((item, index) => {
                 const genrePercent = parseInt(sortedOccurenceArray[index] / limit * 100);
-                const val = `<p>${index + 1} ${item} ${genrePercent}%</p>`;
+                const val = `<span>${index + 1} ${item}</span>` + `<div class="progress"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="${genrePercent}" aria-valuemin="0" aria-valuemax="100" style="width:${genrePercent}%">${genrePercent}%</div></div>` + `<br>`;
                 $("#my-genre").append(val);
               });
             } catch (err) {
