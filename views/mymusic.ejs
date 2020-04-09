@@ -195,22 +195,22 @@
           async function getGenre() {
             try {
               // Get data
+              const limit = 50;
               const response = await fetch(
                 // NOTE Change limit to 50 later
-                `https://api.spotify.com/v1/me/top/artists/?limit=10&time_range=short_term`,
+                `https://api.spotify.com/v1/me/top/artists/?limit=${limit}&time_range=short_term`,
                 options
               );
               const data = await response.json();
+              // Assign all genre into an array
               let genreArray = [];
               data.items.forEach((item, index) => {
-
                 genreArray = genreArray.concat(item.genres);
-                const val = `<p>${index + 1}</p>`;
-                $("#my-genre").append(val);
+
               });
               console.log(genreArray);
 
-              // Sort occurence of genre
+              // Sort genre and corresponding occurence 
               let [cleanedGenreArray, genreOccurenceArray] = findArray(genreArray);
               console.log(cleanedGenreArray, genreOccurenceArray);
 
@@ -220,7 +220,12 @@
               let sortedOccurenceArray = genreOccurenceArray.sort((a, b) => b - a);
               console.log(sortedGenreArray, sortedOccurenceArray);
 
-              // Render result
+              // Render result by looping through each genre
+              sortedGenreArray.forEach((item, index) => {
+                const genrePercent = parseInt(sortedOccurenceArray[index] / limit * 100);
+                const val = `<p>${index + 1} ${item} ${genrePercent}%</p>`;
+                $("#my-genre").append(val);
+              });
             } catch (err) {
               console.log(err);
             }
