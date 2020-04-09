@@ -46,6 +46,21 @@
     .ui-state-active {
       background: #fefefe;
     }
+
+    .progress {
+      width: 50%;
+    }
+
+    .genre-row {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    .genre-progress-bar {
+      background-color: rgb(30, 215, 96);
+      color: white;
+    }
   </style>
 </head>
 
@@ -102,8 +117,8 @@
     </div>
 
     <div class="row my-4">
-      <div class="col-md-12">
-        <h3>Your Genre</h3>
+      <div class="col-md-6">
+        <h3>Your Top Genre</h3>
         <div id="my-genre"></div>
       </div>
     </div>
@@ -208,23 +223,26 @@
                 genreArray = genreArray.concat(item.genres);
 
               });
-              console.log(genreArray);
+              // console.log(genreArray);
 
               // Sort genre and corresponding occurence 
               let [cleanedGenreArray, genreOccurenceArray] = findArray(genreArray);
-              console.log(cleanedGenreArray, genreOccurenceArray);
+              // console.log(cleanedGenreArray, genreOccurenceArray);
 
               let sortedGenreArray = cleanedGenreArray.sort(function (a, b) {
                 return genreOccurenceArray[cleanedGenreArray.indexOf(a)] < genreOccurenceArray[cleanedGenreArray.indexOf(b)] ? 1 : -1;
               });
               let sortedOccurenceArray = genreOccurenceArray.sort((a, b) => b - a);
-              console.log(sortedGenreArray, sortedOccurenceArray);
+              // console.log(sortedGenreArray, sortedOccurenceArray);
 
               // Render result by looping through each genre
               sortedGenreArray.forEach((item, index) => {
-                const genrePercent = parseInt(sortedOccurenceArray[index] / limit * 100);
-                const val = `<span>${index + 1} ${item}</span>` + `<div class="progress"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="${genrePercent}" aria-valuemin="0" aria-valuemax="100" style="width:${genrePercent}%">${genrePercent}%</div></div>` + `<br>`;
-                $("#my-genre").append(val);
+                if (index <= 14) {
+
+                  const genrePercent = parseInt(sortedOccurenceArray[index] / limit * 100);
+                  const val = `<div class="genre-row"><span>${index + 1}. ${item}</span>` + `<div class="progress"><div class="progress-bar genre-progress-bar" role="progressbar" aria-valuenow="${genrePercent}" aria-valuemin="0" aria-valuemax="100" style="width:${genrePercent}%">${genrePercent}%</div></div></div>` + `<br>`;
+                  $("#my-genre").append(val);
+                }
               });
             } catch (err) {
               console.log(err);
