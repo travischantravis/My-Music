@@ -14,6 +14,10 @@
       border-radius: 50%;
     }
 
+    .top-artists-wrapper,
+    .top-tracks-wrapper {
+      cursor: pointer;
+    }
 
     .artist-popularity,
     .track-popularity {
@@ -127,6 +131,7 @@
             <option value="long_term">All time</option>
           </select>
         </div>
+        <div class="loading-div">Loading...</div>
         <div id="my-genre"></div>
       </div>
     </div>
@@ -185,6 +190,16 @@
             headers: { Authorization: "Bearer " + access_token },
             json: true
           };
+
+          // Loading div, not really working
+          const $loading = $('.loading-div').hide();
+          $(document)
+            .ajaxStart(function () {
+              $loading.show();
+            })
+            .ajaxStop(function () {
+              $loading.hide();
+            });
 
           // Find occurence of each element in an array
           function findArray(arr) {
@@ -288,7 +303,7 @@
 
               $("#my-genre").empty();
 
-              // Endpoint 1: Assign all genre into an array
+              // Endpoint 1: Assign all genres into an array
               let genreArray = [];
               data[0].items.forEach((item, index) => {
                 genreArray = genreArray.concat(item.genres);
@@ -321,10 +336,6 @@
                 return unsortedOccurenceArray[unsortedGenreArray.indexOf(a)] < unsortedOccurenceArray[unsortedGenreArray.indexOf(b)] ? 1 : -1;
               });
               let sortedOccurenceArray = unsortedOccurenceArray.sort((a, b) => b - a);
-              console.log(sortedGenreArray, sortedOccurenceArray);
-
-              console.log(data[1]);
-
 
               // Render result by looping through each genre
               sortedGenreArray.forEach((item, index) => {
@@ -356,10 +367,10 @@
                     popularityColor = "lightsalmon";
                   else if (item.popularity < 80)
                     popularityColor = "lightskyblue";
-                  // console.log(item);
-                  const val = `<div style="display:inline-block" class="circle-wrapper mr-2 mb-2"><img src=${item.images[2].url} alt=${item.name}></div>` +
+                  console.log(item);
+                  const val = `<div class="top-artists-wrapper"><div style="display:inline-block" class="circle-wrapper mr-2 mb-2"><img src=${item.images[2].url} alt=${item.name}></div>` +
                     `<p style="display:inline-block">${index + 1}. ${item.name}</p>` +
-                    `<span class="artist-popularity" style="background-color:${popularityColor}">${item.popularity}</span><br>`;
+                    `<span class="artist-popularity" style="background-color:${popularityColor}">${item.popularity}</span></div>` + `<br>`;
                   $("#my-top-artists").append(val);
 
                 });
@@ -372,9 +383,9 @@
                   else if (item.popularity < 80)
                     popularityColor = "lightskyblue";
 
-                  const val = `<div style="display:inline-block" class="circle-wrapper mr-2 mb-2"><img src=${item.album.images[2].url} alt=${item.name}></div>` +
+                  const val = `<div class="top-tracks-wrapper"><div style="display:inline-block" class="circle-wrapper mr-2 mb-2"><img src=${item.album.images[2].url} alt=${item.name}></div>` +
                     `<p style="display:inline-block">${index + 1}. ${item.artists[0].name} - ${item.name}</p>` +
-                    `<span class="track-popularity" style="background-color:${popularityColor}">${item.popularity}</span><br>`;;
+                    `<span class="track-popularity" style="background-color:${popularityColor}">${item.popularity}</span></div>` + `<br>`;;
                   $("#my-top-tracks").append(val);
                 });
               }
@@ -434,16 +445,18 @@
             getGenre($('#top-genre-time').val());
           })
 
-          // Get Genre From Tracks
-          // getGenreFromTracks();
+          // Click on top artists
+          $('#my-top-artists').on('click', '.top-artists-wrapper', e => {
+            console.log(e.target);
+          });
 
-          // Adjust width of menu
+          // Adjust width of drop down menu
           jQuery.ui.autocomplete.prototype._resizeMenu = function () {
             var ul = this.menu.element;
             ul.outerWidth(this.element.outerWidth());
           }
 
-
+          // Search bar
           $('#artist-search').autocomplete({
             minLength: 0,
             source: async function (request, response) {
