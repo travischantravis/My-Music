@@ -278,7 +278,7 @@
               const limit = 50;
               const responses = await Promise.all([
                 fetch(`https://api.spotify.com/v1/me/top/artists/?limit=${limit}&time_range=${range}`, options),
-                fetch(`https://api.spotify.com/v1/me/top/tracks?limit=20`, options)
+                fetch(`https://api.spotify.com/v1/me/top/tracks?limit=${limit}&time_range=${range}`, options)
               ]);
               const data = await Promise.all(
                 responses.map(async response => {
@@ -295,17 +295,13 @@
               });
               const [sortedGenreArray1, sortedOccurenceArray1] = sortTwoArrays(genreArray);
 
-
               // Endpoint 2:
               const [sortedGenreArray2, sortedOccurenceArray2] = await getGenreFromTracks(data[1]);
 
-              // console.log(sortedGenreArray1, sortedGenreArray2);
-              // console.log(sortedOccurenceArray1, sortedOccurenceArray2);
-
+              // Combining two endpoints
               const unsortedGenreArray = [...sortedGenreArray1, ...sortedGenreArray2];
               const unsortedOccurenceArray = [...sortedOccurenceArray1, ...sortedOccurenceArray2];
 
-              console.log(unsortedGenreArray, unsortedOccurenceArray);
               unsortedGenreArray.forEach((genre, index) => {
                 if (index + 1 < unsortedGenreArray.length) {
                   // Get the index of the second duplicated item
@@ -320,7 +316,7 @@
                 }
               });
 
-              // Sort the two arrays
+              // Sort the two final arrays
               let sortedGenreArray = unsortedGenreArray.sort(function (a, b) {
                 return unsortedOccurenceArray[unsortedGenreArray.indexOf(a)] < unsortedOccurenceArray[unsortedGenreArray.indexOf(b)] ? 1 : -1;
               });
