@@ -367,8 +367,7 @@
                     popularityColor = "lightsalmon";
                   else if (item.popularity < 80)
                     popularityColor = "lightskyblue";
-                  console.log(item);
-                  const val = `<div class="top-artists-wrapper"><div style="display:inline-block" class="circle-wrapper mr-2 mb-2"><img src=${item.images[2].url} alt=${item.name}></div>` +
+                  const val = `<div class="top-artists-wrapper" id="${item.id}"><div style="display:inline-block" class="circle-wrapper mr-2 mb-2"><img src=${item.images[2].url} alt=${item.name}></div>` +
                     `<p style="display:inline-block">${index + 1}. ${item.name}</p>` +
                     `<span class="artist-popularity" style="background-color:${popularityColor}">${item.popularity}</span></div>` + `<br>`;
                   $("#my-top-artists").append(val);
@@ -446,8 +445,20 @@
           })
 
           // Click on top artists
-          $('#my-top-artists').on('click', '.top-artists-wrapper', e => {
-            console.log(e.target);
+          let searchArtistId;
+          $('#my-top-artists').on('click', async e => {
+            // Get id of selected artist
+            searchArtistId = $(e.target).closest('.top-artists-wrapper').attr("id");
+            console.log(searchArtistId);
+
+            // Fetch artist data
+            try {
+              const response = await fetch(`https://api.spotify.com/v1/artists/${searchArtistId}`, options);
+              const data = await response.json();
+              console.log(data.name, data.followers);
+            } catch (err) {
+              console.log(err);
+            }
           });
 
           // Adjust width of drop down menu
