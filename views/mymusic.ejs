@@ -512,7 +512,7 @@
                   return await response.json();
                 })
               );
-              console.log(data);
+
               $('.artist-side-profile').empty();
               // Get genre
               const artistGenres = data[0].genres.toString().replace(/,/g, ', ');
@@ -524,10 +524,10 @@
                 popularityColor = "lightskyblue";
 
               // Render result in side menu
-              let val = `<div><img src=${data[0].images[0].url} alt=${data[0].name}></div>` + `<p style="font-size: 24px; margin-bottom:4px; margin-top:8px;">${data[0].name} <span style="background-color:${popularityColor}">${data[0].popularity}</span></p>` + `<p style="color:#767676; margin-bottom:8px;">${artistGenres}</p>` + `<br>` + `<p style="margin-bottom: 12px;">Top tracks</p>`;
+              let val = `<div><img src=${data[0].images[0].url} alt=${data[0].name}></div>` + `<p style="font-size: 24px; margin-bottom:4px; margin-top:8px;">${data[0].name} <span style="background-color:${popularityColor}">${data[0].popularity}</span></p>` + `<p style="color:#767676; margin-bottom:8px;">${artistGenres}</p>` + `<br>` + `<p style="margin-bottom: 10px; font-size: 20px;">Top tracks</p>`;
 
-              // Top 3 tracks of each artist
-              for (let i = 0; i < 3; i++) {
+              // Top tracks of each artist
+              for (let i = 0; i < 5; i++) {
                 let popularityColor2 = "lightgreen";
                 if (data[1].tracks[i].popularity < 60)
                   popularityColor2 = "lightsalmon";
@@ -555,8 +555,9 @@
             // Get id of selected artist
             searchArtistId = $(e.target).closest('.top-artists-wrapper').attr("id");
 
-            // Generate artist profile
-            await generateProfile(searchArtistId);
+            // Generate artist profile if id is not undefined
+            if (searchArtistId)
+              await generateProfile(searchArtistId);
           });
 
           // Close button in side menu
