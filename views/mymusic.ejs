@@ -5,12 +5,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Music</title>
+  <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <style>
     html,
     body {
       overflow-x: hidden;
+    }
+
+    #my-nav {
+      margin-bottom: 40px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      box-shadow: 0px 1px 10px #999;
+      padding: 10px 0;
+    }
+
+    #nav-heading {
+      font-family: 'Indie Flower', cursive;
+      font-size: 30px;
     }
 
     .close-btn {
@@ -63,8 +78,7 @@
       border-radius: 50%;
     }
 
-    .top-artists-wrapper,
-    .top-tracks-wrapper {
+    .top-artists-wrapper {
       cursor: pointer;
     }
 
@@ -80,13 +94,14 @@
 
     .ui-autocomplete {
       max-height: 240px;
-      background-color: #eee;
+      background-color: #fff;
       overflow-y: auto;
       overflow-x: hidden;
       list-style: none;
       margin: 0;
       padding: 0;
       cursor: pointer;
+      box-shadow: 1px 1px 10px #999;
 
     }
 
@@ -97,7 +112,11 @@
     }
 
     .ui-state-active {
-      background: #fefefe;
+      background: #eee;
+    }
+
+    .ui-helper-hidden-accessible {
+      display: none;
     }
 
     .progress {
@@ -118,86 +137,85 @@
 </head>
 
 <body>
-  <div class="container">
+  <div>
     <div class="side-menu">
       <span title="Close" class="close-btn">x</span>
       <div class="artist-side-profile">
         <p>Artist Info</p>
       </div>
     </div>
-    <div class="row">
+    <div id="my-nav">
+      <span id="nav-heading">My Spotifyy</span>
+      <form id="search-artist" class="form-horizontal" role="form" style="width: 20%;">
+        <input id="artist-search" class="form-control" placeholder="Enter artist name...">
+      </form>
       <div class="top-profile" style="vertical-align: middle;">
         <img id="profile-pic" src="<%= response[0].data.images[0].url %>" alt="display pic"
-          style="width: 70px; border-radius: 50%; margin: 10px;">
-        <span style="font-size: 26px;" id="display-name"><%= response[0].data.display_name %>
+          style="width: 40px; border-radius: 20%;">
+        <span style="font-size: 18px;" id="display-name"><%= response[0].data.display_name %>
         </span>
       </div>
     </div>
-    <div class="row" id="serach" style="margin-bottom: 120px;">
-      <form id="search-artist" class="form-horizontal col-sm-6 col-md-6" role="form">
-        <label for="artist-search">Search an artist :</label>
-        <input id="artist-search" class="form-control" placeholder="Search for an Artist">
-      </form>
-    </div>
-
-    <div class="row">
-      <div class="col-md-6">
-        <h3>Your Top 10 Artists</h3>
-        <div id="select-group" class="form-group">
-          <label for="top-artists-time">Select time period :</label>
-          <select class="form-control" id="top-artists-time">
-            <option value="short_term">Last month</option>
-            <option value="medium_term">Last 6 months</option>
-            <option value="long_term">All time</option>
-          </select>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <h3>Your Top 10 Artists</h3>
+          <div id="select-group" class="form-group">
+            <label for="top-artists-time">Select time period :</label>
+            <select class="form-control" id="top-artists-time">
+              <option value="short_term">Last month</option>
+              <option value="medium_term">Last 6 months</option>
+              <option value="long_term">All time</option>
+            </select>
+          </div>
+          <div class="col-md-12" id="my-top-artists"></div>
         </div>
-        <div class="col-md-12" id="my-top-artists"></div>
-      </div>
 
-      <div class="col-md-6">
-        <h3>Your Top 10 Tracks</h3>
-        <div id="select-group1" class="form-group">
-          <label for="top-tracks-time">Select time period :</label>
-          <select class="form-control" id="top-tracks-time">
-            <option value="short_term">Last month</option>
-            <option value="medium_term">Last 6 months</option>
-            <option value="long_term">All time</option>
-          </select>
+        <div class="col-md-6">
+          <h3>Your Top 10 Tracks</h3>
+          <div id="select-group1" class="form-group">
+            <label for="top-tracks-time">Select time period :</label>
+            <select class="form-control" id="top-tracks-time">
+              <option value="short_term">Last month</option>
+              <option value="medium_term">Last 6 months</option>
+              <option value="long_term">All time</option>
+            </select>
+          </div>
+          <div class="col-md-12" id="my-top-tracks"></div>
         </div>
-        <div class="col-md-12" id="my-top-tracks"></div>
       </div>
-    </div>
 
-    <div class="row my-4">
-      <div class="col-md-12">
-        <h3>Your Listening History</h3>
-        <div id="my-history"></div>
-      </div>
-    </div>
-
-    <div class="row my-4">
-      <div class="col-md-6">
-        <h3>Your Top Genre Presence</h3>
-        <div class="form-group">
-          <label for="top-genre-time">Select time period :</label>
-          <select class="form-control" id="top-genre-time">
-            <option value="short_term">Last month</option>
-            <option value="medium_term">Last 6 months</option>
-            <option value="long_term">All time</option>
-          </select>
+      <div class="row my-4">
+        <div class="col-md-12">
+          <h3>Your Listening History</h3>
+          <div id="my-history"></div>
         </div>
-        <div class="loading-div">Loading...</div>
-        <div id="my-genre"></div>
       </div>
-    </div>
 
-    <footer class="row mt-5">
-      <div class="col-md-12">
-        <p class="footer-copyright" style="text-align: center;">
-          © 2020 Travis Chan • Made with <span style="color: #03B875;">&#9829;</span> in Davis
-        </p>
+      <div class="row my-4">
+        <div class="col-md-6">
+          <h3>Your Top Genre Presence</h3>
+          <div class="form-group">
+            <label for="top-genre-time">Select time period :</label>
+            <select class="form-control" id="top-genre-time">
+              <option value="short_term">Last month</option>
+              <option value="medium_term">Last 6 months</option>
+              <option value="long_term">All time</option>
+            </select>
+          </div>
+          <div class="loading-div">Loading...</div>
+          <div id="my-genre"></div>
+        </div>
       </div>
-    </footer>
+
+      <footer class="row mt-5">
+        <div class="col-md-12">
+          <p class="footer-copyright" style="text-align: center;">
+            © 2020 Travis Chan • Made with <span style="color: #03B875;">&#9829;</span> in Davis
+          </p>
+        </div>
+      </footer>
+    </div>
   </div>
 
 
@@ -512,7 +530,7 @@
                   return await response.json();
                 })
               );
-              console.log(data);
+
               $('.artist-side-profile').empty();
               // Get genre
               const artistGenres = data[0].genres.toString().replace(/,/g, ', ');
@@ -524,10 +542,10 @@
                 popularityColor = "lightskyblue";
 
               // Render result in side menu
-              let val = `<div><img src=${data[0].images[0].url} alt=${data[0].name}></div>` + `<p style="font-size: 24px; margin-bottom:4px; margin-top:8px;">${data[0].name} <span style="background-color:${popularityColor}">${data[0].popularity}</span></p>` + `<p style="color:#767676; margin-bottom:8px;">${artistGenres}</p>` + `<br>` + `<p style="margin-bottom: 12px;">Top tracks</p>`;
+              let val = `<div><img src=${data[0].images[0].url} alt=${data[0].name}></div>` + `<p style="font-size: 24px; margin-bottom:4px; margin-top:8px;">${data[0].name} <span style="background-color:${popularityColor}">${data[0].popularity}</span></p>` + `<p style="color:#767676; margin-bottom:8px;">${artistGenres}</p>` + `<br>` + `<p style="margin-bottom: 10px; font-size: 20px;">Top tracks</p>`;
 
-              // Top 3 tracks of each artist
-              for (let i = 0; i < 3; i++) {
+              // Top tracks of each artist
+              for (let i = 0; i < 5; i++) {
                 let popularityColor2 = "lightgreen";
                 if (data[1].tracks[i].popularity < 60)
                   popularityColor2 = "lightsalmon";
@@ -555,8 +573,9 @@
             // Get id of selected artist
             searchArtistId = $(e.target).closest('.top-artists-wrapper').attr("id");
 
-            // Generate artist profile
-            await generateProfile(searchArtistId);
+            // Generate artist profile if id is not undefined
+            if (searchArtistId)
+              await generateProfile(searchArtistId);
           });
 
           // Close button in side menu
@@ -583,7 +602,6 @@
                   data.artists.items.forEach(artist => {
                     res.push(artist);
                   })
-                  console.log(data.artists);
                   response(res);
                 } else {
                   response([]);
@@ -594,7 +612,19 @@
               }
             },
             select: function (event, ui) {
+              // Display artist name in search bar
               $('#artist-search').val(ui.item.name);
+
+              // Toggle side menu
+              if (!$('body').hasClass('side-open')) {
+                $('body').addClass('side-open');
+              }
+
+              // Get artist id 
+              const artistId = ui.item.id;
+              generateProfile(artistId);
+
+              // jquery standard
               return false;
             }
           })
