@@ -31,7 +31,6 @@
     }
 
 
-
     .side-menu {
       position: fixed;
       z-index: 2;
@@ -53,7 +52,8 @@
 
     .artist-side-profile img {
       width: 100%;
-
+      height: 300px;
+      object-fit: cover;
     }
 
     .circle-wrapper img {
@@ -509,19 +509,34 @@
 
             // Get id of selected artist
             searchArtistId = $(e.target).closest('.top-artists-wrapper').attr("id");
-
+            // const responses = await Promise.all([
+            //   fetch(`https://api.spotify.com/v1/me/top/artists/?limit=${limit}&time_range=${range}`, options),
+            //   fetch(`https://api.spotify.com/v1/me/top/tracks?limit=${limit}&time_range=${range}`, options)
+            // ]);
+            // const data = await Promise.all(
+            //   responses.map(async response => {
+            //     return await response.json();
+            //   })
+            // );
 
             // Fetch artist data
             try {
-              const response = await fetch(`https://api.spotify.com/v1/artists/${searchArtistId}`, options);
-              const data = await response.json();
+              const responses = await Promise.all([
+                fetch(`https://api.spotify.com/v1/artists/${searchArtistId}`, options),
+                fetch(`https://api.spotify.com/v1/artists/${searchArtistId}/top-tracks?country=US`, options)
+              ]);
+              const data = await Promise.all(
+                responses.map(async response => {
+                  return await response.json();
+                })
+              );
               console.log(data);
               $('.artist-side-profile').empty();
               // Get genre
-              const artistGenres = data.genres.toString();
+              const artistGenres = data[0].genres.toString();
 
               // Render result in side menu
-              const val = `<div><img src=${data.images[2].url} alt=${data.name}></div>` + `<p style="font-size: 24px;">${data.name}</p>` + `<p>${artistGenres}</p>`;
+              const val = `<div><img src=${data[0].images[0].url} alt=${data[0].name}></div>` + `<p style="font-size: 24px;">${data[0].name}</p>` + `<p>${artistGenres}</p>`;
               $('.artist-side-profile').append(val);
             } catch (err) {
               console.log(err);
