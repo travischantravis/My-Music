@@ -31,7 +31,6 @@
     }
 
 
-
     .side-menu {
       position: fixed;
       z-index: 2;
@@ -48,12 +47,14 @@
     }
 
     .artist-side-profile p {
-      margin-left: 6px;
+      padding-left: 6px;
+
     }
 
     .artist-side-profile img {
       width: 100%;
-
+      height: 300px;
+      object-fit: cover;
     }
 
     .circle-wrapper img {
@@ -119,7 +120,7 @@
 <body>
   <div class="container">
     <div class="side-menu">
-      <span class="close-btn">x</span>
+      <span title="Close" class="close-btn">x</span>
       <div class="artist-side-profile">
         <p>Artist Info</p>
       </div>
@@ -421,7 +422,7 @@
                     popularityColor = "lightsalmon";
                   else if (item.popularity < 80)
                     popularityColor = "lightskyblue";
-                  const val = `<div class="top-artists-wrapper" id="${item.id}"><div style="display:inline-block" class="circle-wrapper mr-2 mb-2"><img src=${item.images[2].url} alt=${item.name}></div>` +
+                  const val = `<div class="top-artists-wrapper" id="${item.id}"><div style="display:inline-block" class="circle-wrapper mr-2 mb-2"><img src=${item.images[0].url} alt=${item.name}></div>` +
                     `<p style="display:inline-block">${index + 1}. ${item.name}</p>` +
                     `<span class="artist-popularity" style="background-color:${popularityColor}">${item.popularity}</span></div>` + `<br>`;
                   $("#my-top-artists").append(val);
@@ -436,7 +437,7 @@
                   else if (item.popularity < 80)
                     popularityColor = "lightskyblue";
 
-                  const val = `<div class="top-tracks-wrapper"><div style="display:inline-block" class="circle-wrapper mr-2 mb-2"><img src=${item.album.images[2].url} alt=${item.name}></div>` +
+                  const val = `<div class="top-tracks-wrapper"><div style="display:inline-block" class="circle-wrapper mr-2 mb-2"><img src=${item.album.images[0].url} alt=${item.name}></div>` +
                     `<p style="display:inline-block">${index + 1}. ${item.artists[0].name} - ${item.name}</p>` +
                     `<span class="track-popularity" style="background-color:${popularityColor}">${item.popularity}</span></div>` + `<br>`;;
                   $("#my-top-tracks").append(val);
@@ -466,7 +467,7 @@
                 const newDate = day + "/" + month + "/" + year + ' ' + dateObj.toLocaleTimeString();
 
 
-                const val = `<div style="display:inline-block" class="circle-wrapper mr-2 mb-2"><img src=${item.track.album.images[2].url} alt=${item.track.name}></div>` +
+                const val = `<div style="display:inline-block" class="circle-wrapper mr-2 mb-2"><img src=${item.track.album.images[0].url} alt=${item.track.name}></div>` +
                   `<p style="display:inline-block">${index + 1}. ${item.track.artists[0].name} - ${item.track.name}</p>` +
                   `<span class="track-popularity" style="background-color:${popularityColor}">${item.track.popularity}</span>` + `<span class="played-at">Played at ${newDate}</span > ` + `<br>`;
                 $("#my-history").append(val);
@@ -498,6 +499,50 @@
             getGenre($('#top-genre-time').val());
           })
 
+          // Generate artist profile in side menu
+          async function generateProfile(artistId) {
+            try {
+              // Fetch data
+              const responses = await Promise.all([
+                fetch(`https://api.spotify.com/v1/artists/${artistId}`, options),
+                fetch(`https://api.spotify.com/v1/artists/${artistId}/top-tracks?country=US`, options)
+              ]);
+              const data = await Promise.all(
+                responses.map(async response => {
+                  return await response.json();
+                })
+              );
+              console.log(data);
+              $('.artist-side-profile').empty();
+              // Get genre
+              const artistGenres = data[0].genres.toString().replace(/,/g, ', ');
+
+              let popularityColor = "lightgreen";
+              if (data[0].popularity < 60)
+                popularityColor = "lightsalmon";
+              else if (data[0].popularity < 80)
+                popularityColor = "lightskyblue";
+
+              // Render result in side menu
+              let val = `<div><img src=${data[0].images[0].url} alt=${data[0].name}></div>` + `<p style="font-size: 24px; margin-bottom:4px; margin-top:8px;">${data[0].name} <span style="background-color:${popularityColor}">${data[0].popularity}</span></p>` + `<p style="color:#767676; margin-bottom:8px;">${artistGenres}</p>` + `<br>` + `<p style="margin-bottom: 12px;">Top tracks</p>`;
+
+              // Top 3 tracks of each artist
+              for (let i = 0; i < 3; i++) {
+                let popularityColor2 = "lightgreen";
+                if (data[1].tracks[i].popularity < 60)
+                  popularityColor2 = "lightsalmon";
+                else if (data[1].tracks[i].popularity < 80)
+                  popularityColor2 = "lightskyblue";
+
+                val += `<p style="margin-bottom: 12px; color:#767676"><span>${i + 1}.</span> ${data[1].tracks[i].name} <span style="background-color:${popularityColor2}">${data[1].tracks[i].popularity}</span></p>`;
+
+              }
+              $('.artist-side-profile').append(val);
+            } catch (err) {
+              console.log(err);
+            }
+          }
+
           // Click on top artists
           let searchArtistId;
           $('#my-top-artists').on('click', async e => {
@@ -510,22 +555,8 @@
             // Get id of selected artist
             searchArtistId = $(e.target).closest('.top-artists-wrapper').attr("id");
 
-
-            // Fetch artist data
-            try {
-              const response = await fetch(`https://api.spotify.com/v1/artists/${searchArtistId}`, options);
-              const data = await response.json();
-              console.log(data);
-              $('.artist-side-profile').empty();
-              // Get genre
-              const artistGenres = data.genres.toString();
-
-              // Render result in side menu
-              const val = `<div><img src=${data.images[2].url} alt=${data.name}></div>` + `<p style="font-size: 24px;">${data.name}</p>` + `<p>${artistGenres}</p>`;
-              $('.artist-side-profile').append(val);
-            } catch (err) {
-              console.log(err);
-            }
+            // Generate artist profile
+            await generateProfile(searchArtistId);
           });
 
           // Close button in side menu
