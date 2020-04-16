@@ -133,6 +133,44 @@
       background-color: #1db954;
       color: white;
     }
+
+    footer {
+      height: 50px;
+      text-align: center;
+    }
+
+    .footer-contact {
+      padding-top: 1rem;
+    }
+
+    .footer-copyright {
+      color: #999999;
+    }
+
+    .fab,
+    .fas {
+      opacity: 0.75;
+      color: #999999;
+      margin: 0 10px;
+      transition: all 0.3s;
+    }
+
+    .fab:hover,
+    .fas:hover {
+      color: #1db954;
+    }
+
+    .footer-copyright {
+      padding: 1rem 0 1rem 0;
+    }
+
+    @media (max-width: 768px) {
+      #display-name {
+        display: none;
+      }
+
+
+    }
   </style>
 </head>
 
@@ -147,7 +185,7 @@
     <div id="my-nav">
       <span id="nav-heading">My Spotifyy</span>
       <form id="search-artist" class="form-horizontal" role="form" style="width: 20%;">
-        <input id="artist-search" class="form-control" placeholder="Enter artist name...">
+        <input id="artist-search" class="form-control" placeholder="Enter artist name..." type="search">
       </form>
       <div class="top-profile" style="vertical-align: middle;">
         <img id="profile-pic" src="<%= response[0].data.images[0].url %>" alt="display pic"
@@ -208,14 +246,24 @@
         </div>
       </div>
 
-      <footer class="row mt-5">
-        <div class="col-md-12">
-          <p class="footer-copyright" style="text-align: center;">
-            © 2020 Travis Chan • Made with <span style="color: #03B875;">&#9829;</span> in Davis
-          </p>
-        </div>
-      </footer>
+
+
+
     </div>
+    <footer class="row mt-5">
+      <div class="container">
+        <div class="footer-contact">
+          <a href="https://www.linkedin.com/in/travis-chan-39423516b/"><i class="fab fa-linkedin fa-2x"></i></a>
+          <a href="https://github.com/travischantravis"><i class="fab fa-github fa-2x"></i></a>
+          <a href="mailto:trachan@ucdavis.edu"><i class="fas fa-envelope fa-2x"></i></a>
+        </div>
+        <p class="footer-copyright">
+          © 2020 Travis Chan • Made with <span style="color: #03B875;">&#9829;</span> in Davis
+
+        </p>
+      </div>
+    </footer>
+
   </div>
 
 
@@ -230,6 +278,7 @@
     crossorigin="anonymous"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
     integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/33be46e53d.js" crossorigin="anonymous"></script>
   <script>
     $(function () {
 
@@ -454,7 +503,6 @@
                     popularityColor = "lightsalmon";
                   else if (item.popularity < 80)
                     popularityColor = "lightskyblue";
-
                   const val = `<div class="top-tracks-wrapper"><div style="display:inline-block" class="circle-wrapper mr-2 mb-2"><img src=${item.album.images[0].url} alt=${item.name}></div>` +
                     `<p style="display:inline-block">${index + 1}. ${item.artists[0].name} - ${item.name}</p>` +
                     `<span class="track-popularity" style="background-color:${popularityColor}">${item.popularity}</span></div>` + `<br>`;;
@@ -633,6 +681,16 @@
               const val = `<div class="autocomplete-item"> ${item.name} </div>`;
               return $("<li></li>").data("item.autocomplete", item).append(val).appendTo(ul);
             };
+
+          // Responsiveness to the placeholder in search bar
+          $(window).resize(() => {
+            if ($(window).width() < 768) {
+              $("#artist-search").attr("placeholder", "");
+            } else {
+              $("#artist-search").attr("placeholder", "Enter artist name...");
+            }
+          })
+
 
 
         } else {
