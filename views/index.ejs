@@ -14,6 +14,12 @@
       display: none;
     }
 
+    #login h1 {
+      text-align: center;
+    }
+
+
+
     .text-overflow {
       overflow: hidden;
       text-overflow: ellipsis;
@@ -37,11 +43,18 @@
       outline: none;
       font-size: 14px;
       line-height: 1;
+      /* width: 80%; */
     }
 
     .spotify-btn:hover {
       background: #1ed760;
       border: 1px solid #1ed760;
+    }
+
+    @media (max-width: 500px) {
+      .spotify-btn {
+        width: 80%;
+      }
     }
   </style>
 </head>
@@ -49,22 +62,28 @@
 <body>
   <div class="container">
     <div class="row my-4">
-      <div id="login">
-        <h1>Your Spotify Ranking Visualisation</h1>
-        <a href="/login" class="btn btn-primary spotify-btn my-4">Log in with Spotify</a>
+      <div class="col">
+        <div id="login">
+          <h1>Welcome to My Spotifyy</h1>
+          <a href="/login" class="btn btn-primary spotify-btn my-4">Log in with Spotify</a>
+        </div>
       </div>
     </div>
     <div class="row">
-      <div id="loggedin">
-        <div id="user-profile">
+      <div class="col">
+        <div id="loggedin">
+          <div id="user-profile">
+          </div>
+          <div id="oauth">
+          </div>
+          <button class="btn btn-default" id="obtain-new-token">Obtain new token using the refresh token</button>
         </div>
-        <div id="oauth">
-        </div>
-        <button class="btn btn-default" id="obtain-new-token">Obtain new token using the refresh token</button>
       </div>
     </div>
     <div class="row">
-      <img id="music-undraw" src="img/music.svg" alt="svg">
+      <div class="col" style="display: flex; justify-content: center;">
+        <img id="music-undraw" src="img/music.svg" alt="svg">
+      </div>
     </div>
   </div>
 
@@ -154,6 +173,10 @@
         } else {
           // render initial screen
           $('#login').show();
+          // override display:block
+          $('#login').css("display", 'flex');
+          $('#login').css("flex-direction", 'column');
+          $('#login').css("align-items", 'center');
           $('#loggedin').hide();
         }
 
