@@ -17,7 +17,7 @@ require("dotenv").config();
 
 const client_id = "cd66c60352304cec9b3e38584fb3ed47"; // Your client id
 const client_secret = process.env.CLIENT_SECRET; // Your secret
-const redirect_uri = "http://localhost:3000/callback"; // Your redirect uri
+const redirect_uri = "https://my-spotifyy.herokuapp.com/callback"; // Your redirect uri
 
 /**
  * Generates a random string containing numbers and letters
