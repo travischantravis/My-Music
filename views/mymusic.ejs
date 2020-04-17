@@ -71,6 +71,7 @@
       right: -300px;
       transition: all 400ms ease;
       transform: translateZ(0);
+      overflow-y: visible;
     }
 
     .side-open .side-menu {
@@ -202,6 +203,7 @@
 
     @media (max-width: 600px) {
       .side-menu {
+        overflow: visible;
         overflow-y: scroll;
         width: 100%;
         right: -600px;
@@ -330,8 +332,9 @@
   <script>
     $(function () {
 
-      // Fix double scroll bars
+      // BUG: double scroll bars
       $('html').css('overflow', 'visible');
+      // $('html').css('overflow-x', 'hidden');
 
       // Responsiveness: NOTE jquery window.width != css max-width
       if ($(window).width() < 761) {
@@ -760,7 +763,7 @@
 
         } else {
           // render initial screen
-          window.location = "https://my-spotifyy.herokuapp.com/";
+          window.location = "http://localhost:3000/";
         }
 
       }

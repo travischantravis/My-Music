@@ -17,14 +17,14 @@ require("dotenv").config();
 
 const client_id = "cd66c60352304cec9b3e38584fb3ed47"; // Your client id
 const client_secret = process.env.CLIENT_SECRET; // Your secret
-const redirect_uri = "https://my-spotifyy.herokuapp.com/callback"; // Your redirect uri
+const redirect_uri = "http://localhost:3000/callback"; // Your redirect uri
 
 /**
  * Generates a random string containing numbers and letters
  * @param  {number} length The length of the string
  * @return {string} The generated string
  */
-var generateRandomString = function(length) {
+var generateRandomString = function (length) {
   let text = "";
   const possible =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -51,7 +51,7 @@ app.get("/", (req, res) => {
   res.render("index");
 });
 
-app.get("/login", function(req, res) {
+app.get("/login", function (req, res) {
   const state = generateRandomString(16);
   res.cookie(stateKey, state);
 
@@ -65,12 +65,12 @@ app.get("/login", function(req, res) {
         client_id: client_id,
         scope: scope,
         redirect_uri: redirect_uri,
-        state: state
+        state: state,
       })
   );
 });
 
-app.get("/callback", function(req, res) {
+app.get("/callback", function (req, res) {
   // your application requests refresh and access tokens
   // after checking the state parameter
 
@@ -82,7 +82,7 @@ app.get("/callback", function(req, res) {
     res.redirect(
       "/#" +
         querystring.stringify({
-          error: "state_mismatch"
+          error: "state_mismatch",
         })
     );
   } else {
@@ -92,17 +92,17 @@ app.get("/callback", function(req, res) {
       form: {
         code: code,
         redirect_uri: redirect_uri,
-        grant_type: "authorization_code"
+        grant_type: "authorization_code",
       },
       headers: {
         Authorization:
           "Basic " +
-          new Buffer(client_id + ":" + client_secret).toString("base64")
+          new Buffer(client_id + ":" + client_secret).toString("base64"),
       },
-      json: true
+      json: true,
     };
 
-    request.post(authOptions, function(error, response, body) {
+    request.post(authOptions, function (error, response, body) {
       if (!error && response.statusCode === 200) {
         var access_token = body.access_token,
           refresh_token = body.refresh_token;
@@ -127,14 +127,14 @@ app.get("/callback", function(req, res) {
           "/mymusic/?" +
             querystring.stringify({
               access_token: access_token,
-              refresh_token: refresh_token
+              refresh_token: refresh_token,
             })
         );
       } else {
         res.redirect(
           "/#" +
             querystring.stringify({
-              error: "invalid_token"
+              error: "invalid_token",
             })
         );
       }
@@ -142,7 +142,7 @@ app.get("/callback", function(req, res) {
   }
 });
 
-app.get("/refresh_token", function(req, res) {
+app.get("/refresh_token", function (req, res) {
   // requesting access token from refresh token
   var refresh_token = req.query.refresh_token;
   var authOptions = {
@@ -150,20 +150,20 @@ app.get("/refresh_token", function(req, res) {
     headers: {
       Authorization:
         "Basic " +
-        new Buffer(client_id + ":" + client_secret).toString("base64")
+        new Buffer(client_id + ":" + client_secret).toString("base64"),
     },
     form: {
       grant_type: "refresh_token",
-      refresh_token: refresh_token
+      refresh_token: refresh_token,
     },
-    json: true
+    json: true,
   };
 
-  request.post(authOptions, function(error, response, body) {
+  request.post(authOptions, function (error, response, body) {
     if (!error && response.statusCode === 200) {
       var access_token = body.access_token;
       res.send({
-        access_token: access_token
+        access_token: access_token,
       });
     }
   });
@@ -175,7 +175,7 @@ app.get("/mymusic/", (req, res) => {
 
   const options = {
     headers: { Authorization: "Bearer " + access_token },
-    json: true
+    json: true,
   };
 
   async function getData() {
@@ -185,7 +185,7 @@ app.get("/mymusic/", (req, res) => {
         axios.get(
           "https://api.spotify.com/v1/me/top/artists/?limit=10&time_range=long_term",
           options
-        )
+        ),
       ]);
 
       // const data = response.data;
