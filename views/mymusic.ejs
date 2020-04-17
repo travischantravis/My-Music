@@ -17,15 +17,30 @@
     #my-nav {
       margin-bottom: 40px;
       display: flex;
-      flex-direction: row;
-      justify-content: space-around;
+      flex-direction: column;
       box-shadow: 0px 1px 10px #999;
       padding: 10px 0;
+    }
+
+    .nav-first-row {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+    }
+
+    .nav-second-row {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
     }
 
     #nav-heading {
       font-family: 'Indie Flower', cursive;
       font-size: 30px;
+    }
+
+    #search-artist {
+      width: 20%;
     }
 
     .close-btn {
@@ -169,7 +184,18 @@
         display: none;
       }
 
+      .nav-second-row {
+        padding-top: 10px;
+      }
 
+    }
+
+    @media (max-width: 600px) {
+      .side-menu {
+        overflow-y: scroll;
+        width: 100%;
+        right: -600px;
+      }
     }
   </style>
   <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -192,16 +218,20 @@
       </div>
     </div>
     <div id="my-nav">
-      <span id="nav-heading">My Spotifyy</span>
-      <form id="search-artist" class="form-horizontal" role="form" style="width: 20%;">
-        <input id="artist-search" class="form-control" placeholder="Enter artist name..." type="search">
-      </form>
-      <div class="top-profile" style="vertical-align: middle;">
-        <img id="profile-pic" src="<%= response[0].data.images[0].url %>" alt="display pic"
-          style="width: 40px; border-radius: 20%;">
-        <span style="font-size: 18px;" id="display-name"><%= response[0].data.display_name %>
-        </span>
+      <div class="nav-first-row">
+        <span id="nav-heading">My Spotifyy</span>
+        <form id="search-artist" class="form-horizontal" role="form">
+          <input id="artist-search" class="form-control" placeholder="Enter artist name..." type="search">
+        </form>
+        <div class="top-profile" style="vertical-align: middle;">
+          <img id="profile-pic" src="<%= response[0].data.images[0].url %>" alt="display pic"
+            style="width: 40px; border-radius: 20%;">
+          <span style="font-size: 18px;" id="display-name"><%= response[0].data.display_name %>
+          </span>
+        </div>
       </div>
+      <div class="nav-second-row"></div>
+
     </div>
     <div class="container">
       <div class="row">
@@ -233,13 +263,6 @@
       </div>
 
       <div class="row my-4">
-        <div class="col-md-12">
-          <h3>Your Listening History</h3>
-          <div id="my-history"></div>
-        </div>
-      </div>
-
-      <div class="row my-4">
         <div class="col-md-6">
           <h3>Your Top Genre Presence</h3>
           <div class="form-group">
@@ -252,6 +275,12 @@
           </div>
           <div class="loading-div">Loading...</div>
           <div id="my-genre"></div>
+        </div>
+      </div>
+      <div class="row my-4">
+        <div class="col-md-12">
+          <h3>Your Listening History</h3>
+          <div id="my-history"></div>
         </div>
       </div>
 
@@ -290,6 +319,31 @@
   <script src="https://kit.fontawesome.com/33be46e53d.js" crossorigin="anonymous"></script>
   <script>
     $(function () {
+
+      // Fix double scroll bars
+      $('html').css('overflow', 'visible');
+
+      // Responsiveness: NOTE jquery window.width != css max-width
+      if ($(window).width() < 761) {
+        // navbar
+        $("#search-artist").appendTo(".nav-second-row");
+        $("#search-artist").css('width', '90%');
+      }
+      // If window resize
+      $(window).resize(() => {
+        if ($(window).width() < 761) {
+          // navbar
+          $("#search-artist").appendTo(".nav-second-row");
+          $("#search-artist").css('width', '90%');
+        } else {
+
+          // navbar
+          $("#search-artist").insertBefore("#my-nav .top-profile");
+          $("#search-artist").css({ width: '' });
+        }
+      })
+
+
 
       /**
          * Obtains parameters from the URL
@@ -691,14 +745,6 @@
               return $("<li></li>").data("item.autocomplete", item).append(val).appendTo(ul);
             };
 
-          // Responsiveness to the placeholder in search bar
-          $(window).resize(() => {
-            if ($(window).width() < 768) {
-              $("#artist-search").attr("placeholder", "");
-            } else {
-              $("#artist-search").attr("placeholder", "Enter artist name...");
-            }
-          })
 
 
 
