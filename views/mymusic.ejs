@@ -12,6 +12,8 @@
     html,
     body {
       overflow-x: hidden;
+      margin: 0;
+      padding: 0;
     }
 
     #my-nav {
@@ -300,7 +302,7 @@
 
 
     </div>
-    <footer class="row mt-5">
+    <footer class="mt-5">
       <div class="container">
         <div class="footer-contact">
           <a href="https://www.linkedin.com/in/travis-chan-39423516b/"><i class="fab fa-linkedin fa-2x"></i></a>
@@ -334,7 +336,6 @@
 
       // BUG: double scroll bars
       $('html').css('overflow', 'visible');
-      // $('html').css('overflow-x', 'hidden');
 
       // Responsiveness: NOTE jquery window.width != css max-width
       if ($(window).width() < 761) {
